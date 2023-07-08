@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+
+  server:
+    container_name: "${SERVER_CONTAINER}"
+    build:
+      context: ./app
+      dockerfile: ./Dockerfile
+    ports:
+     - "${SERVER_PORT}:${SERVER_PORT}"
+    env_file:
+      - .env
+    volumes:
+      - "./app/:/app/"
