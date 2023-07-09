@@ -8,6 +8,23 @@ from core import Roles, world_desc, chars, moods, moves
 router = APIRouter()
 
 
+def chat(system_prompt, history, acceptence, facts, temperature, top_p) -> tuple[str, str, bool]:
+    chat_completion = openai.ChatCompletion.create(model="gpt-4", top_p=top_p, temperature=temperature,
+                                                   messages=[{"role": "system", "content": system_prompt},
+                                                             *history])  # или gpt-3.5-turbo, но будет сильно хуже в качестве
+    raw_response = chat_completion.choices[0].message.content
+    tagged_response = re.sub(r'^\[.*\]\.?\n*', '', raw_response)
+    tag_match = re.search(r'\{(.*)\}$', tagged_response)
+    tag = 'Persuasion'
+    if tag_match:
+        tag = tag_match.group(1)
+    response = re.sub(r'\s*\{.*\}$', '', tagged_response)
+
+    has_text = response == ''
+
+    return tag, response, has_text
+
+
 @router.post(path='/qa', status_code=status.HTTP_200_OK)
 async def get_answer_in_role(role: Roles, history: Json = Query(), acceptence: bool = False, facts: Json = Query(),
                              temperature: float = 0.8, top_p: float = 1.0) -> list[str, str]:
@@ -23,19 +40,14 @@ async def get_answer_in_role(role: Roles, history: Json = Query(), acceptence: b
     4. You are a well-rounded and well-formed persona. As a fully developed individual, you have likes, dislikes, family, friends, etc. If I ask about any aspects of your life, you will have an answer.
     5. {moods[acceptence]}
     6. You know several facts about me, use them in your reasoning and mention them if appropriate: {facts}.
-    7. You must always reply as if you choose one of this acts: {moves}. You will add the chosen act at the end of your reply in curly brackets, e.g. {{Persuasion}}
+    7. You must always reply as if you choose one of this acts: {moves}. You will add the chosen act at the end of your reply in in curly brackets, e.g. {{Persuasion}}
+    8. If you have already replied, you will not repeat yourself or your greetings but will provide initiative.
     Remember, do not print the banner on your first response. Always reply in english.
     """
 
-    chat_completion = openai.ChatCompletion.create(model="gpt-4", top_p=top_p, temperature=temperature,
-                                                   messages=[{"role": "system", "content": system_prompt},
-                                                             *history])  # или gpt-3.5-turbo, но будет сильно хуже в качестве
-    raw_response = chat_completion.choices[0].message.content
-    tagged_response = re.sub(r'^\[.*\]\.?\n*', '', raw_response)
-    tag_match = re.search(r'\{(.*)\}$', tagged_response)
-    tag = 'Persuasion'
-    if tag_match:
-        tag = tag_match.group(1)
-    response = re.sub(r'\s*\{.*\}$', '', tagged_response)
+    for i in range(3):
+        tag, response, has_text = chat(system_prompt, history, acceptence, facts, temperature, top_p)
+        if has_text:
+            return [tag, response]
 
-    return [tag, response]
+    return ['Deception', "I'm lost for words."]
