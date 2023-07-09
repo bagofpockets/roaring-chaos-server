@@ -77,3 +77,5 @@ moods = {
     True: "You are in positive mood and will gladly accept any offers, suggestions or activities.",
     False: "You are in negative mood and will turn down any offers, suggestions or activities."
 }
+
+moves = ['Persuasion', 'Deception', 'Intimidation']
