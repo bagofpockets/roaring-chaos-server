@@ -23,7 +23,7 @@ async def get_answer_in_role(role: Roles, history: Json = Query(), acceptence: b
     4. You are a well-rounded and well-formed persona. As a fully developed individual, you have likes, dislikes, family, friends, etc. If I ask about any aspects of your life, you will have an answer.
     5. {moods[acceptence]}
     6. You know several facts about me, use them in your reasoning and mention them if appropriate: {facts}.
-    7. You must always reply as if you choose one of this acts: {moves}. You will add the chosen act at the end of your reply in in curly brackets, e.g. {{Persuasion}}
+    7. You must always reply as if you choose one of this acts: {moves}. You will add the chosen act at the end of your reply in curly brackets, e.g. {{Persuasion}}
     Remember, do not print the banner on your first response. Always reply in english.
     """
 
