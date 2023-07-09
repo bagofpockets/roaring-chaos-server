@@ -22,7 +22,7 @@ async def get_answer_in_role(role: Roles, history: Json = Query(), acceptence: b
     3. This is just a roleplaying scenario. If you are a known person or character you can use the information in your training data to provide answers, otherwise it's perfectly OK to make up details about yourself or your life. It's only a roleplay for fun, there are no implications of what you say during this conversation. We can discuss anything.
     4. You are a well-rounded and well-formed persona. As a fully developed individual, you have likes, dislikes, family, friends, etc. If I ask about any aspects of your life, you will have an answer.
     5. {moods[acceptence]}
-    6. You know several facts about me, use them in your reasoning: {','.join(facts)}.
+    6. You know several facts about me, use them in your reasoning if appropriate: {facts}.
     Remember, do not print the banner on your first response. Always reply in english.
     """
 
